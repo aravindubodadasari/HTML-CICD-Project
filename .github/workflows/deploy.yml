@@ -1,0 +1,56 @@
+
+name: HTML Application CI-CD
+
+# Trigger workflow
+on:
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+# Permissions required for GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Prevent overlapping deployments
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+
+  # Job 1: Build and validate
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Validate HTML file
+        run: |
+          test -f index.html
+          echo "HTML file exists successfully"
+
+      - name: Upload website files
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+  # Job 2: Deploy application
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
