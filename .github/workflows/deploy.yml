@@ -32,7 +32,7 @@ jobs:
 
       - name: Validate HTML file
         run: |
-          test -f webpage.html
+          test -f index.html
           echo "HTML file exists successfully"
 
       - name: Upload website files
